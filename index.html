@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chaitanya Jha | Portfolio</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <canvas id="bg-canvas"></canvas>
+
+    <nav class="navbar">
+        <div class="logo">Portfolio.</div>
+        <div class="nav-links">
+            <a href="#home" class="nav-item active" onclick="switchPage('home')">Home</a>
+            <a href="#about" class="nav-item" onclick="switchPage('about')">About</a>
+            <a href="#education" class="nav-item" onclick="switchPage('education')">Education</a>
+            <a href="#skills" class="nav-item" onclick="switchPage('skills')">Skills</a>
+            <a href="#testing" class="nav-item" onclick="switchPage('testing')">QA Experience</a>
+            <a href="#projects" class="nav-item" onclick="switchPage('projects')">Projects</a>
+            <a href="#contact" class="nav-item" onclick="switchPage('contact')">Contact</a>
+        </div>
+    </nav>
+
+    <main class="content-container">
+
+        <section id="home" class="page-section active">
+            <div class="hero-content">
+                <span class="subtitle">Electronics & Instrumentation Engineering Student</span>
+                <h1>Hi, I'm Chaitanya Jha</h1>
+                <p>An Engineering student at <a href="https://bit-bangalore.edu.in/" target="_blank" class="text-link">Bangalore Institute of Technology</a>, specializing in systems optimization, automation, and full-stack software prototypes.</p>
+                <div class="cta-buttons">
+                    <a href="#skills" class="btn primary" onclick="switchPage('skills')">Explore Skills</a>
+                    <a href="#contact" class="btn secondary" onclick="switchPage('contact')">Get In Touch</a>
+                </div>
+            </div>
+        </section>
+
+        <section id="about" class="page-section">
+            <div class="section-container">
+                <h2>About Me</h2>
+                <div class="about-grid">
+                    <div class="about-text">
+                        <h3>Driven by logic. Built on precision.</h3>
+                        <p>I am an engineer and developer who views software through a lens of system performance and optimization. Backed by a strong foundation in core mathematics and analytical physics, my academic and personal projects bridge the gap between software frameworks and hardware logic.</p>
+                        <p>I specialize in writing automated Python scripts, configuring hardware tuning utilities for maximum execution efficiency, and architecting data-driven web interfaces. I focus on applying rigorous mathematical logic to solve complex technical challenges.</p>
+                    </div>
+                    <div class="status-card">
+                        <h4>Professional Profile</h4>
+                        <ul>
+                            <li><strong>Institution:</strong> <a href="https://bit-bangalore.edu.in/" target="_blank" class="text-link">Bangalore Institute of Technology (BIT)</a></li>
+                            <li><strong>Specialization:</strong> <a href="https://en.wikipedia.org/wiki/Instrumentation_engineering" target="_blank" class="text-link">Electronics and Instrumentation Engineering</a></li>
+                            <li><strong>Core Focus:</strong> <a href="https://en.wikipedia.org/wiki/Systems_optimization" target="_blank" class="text-link">Systems Optimization</a>, <a href="https://en.wikipedia.org/wiki/Automation" target="_blank" class="text-link">Automation</a>, <a href="https://en.wikipedia.org/wiki/Web_architecture" target="_blank" class="text-link">Web Architectures</a></li>
+                            <li><strong>Analytical Strengths:</strong> <a href="https://en.wikipedia.org/wiki/Engineering_mathematics" target="_blank" class="text-link">Engineering Mathematics</a>, <a href="https://en.wikipedia.org/wiki/Physics" target="_blank" class="text-link">Advanced Physics</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="education" class="page-section">
+            <div class="section-container">
+                <h2>Education & Academic Milestones</h2>
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-content">
+                            <span class="timeline-date">2025 - Present</span>
+                            <h3>Bachelor of Engineering (B.E.)</h3>
+                            <p class="timeline-institution"><a href="https://bit-bangalore.edu.in/" target="_blank" class="text-link">Bangalore Institute of Technology (BIT)</a></p>
+                            <p class="timeline-details">Branch: Electronics and Instrumentation Engineering (EIE)</p>
+                            <p>Focusing on electronic circuits, hardware description languages, computational logic, and algorithmic performance. Maintaining a strong academic foundation with direct hands-on lab execution at BIT.</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-content">
+                            <span class="timeline-date">Secondary Education</span>
+                            <h3>Classes 5 - 12</h3>
+                            <p class="timeline-institution"><a href="https://afaste.karnataka.gov.in/" target="_blank" class="text-link">Air Force School ASTE, GV Camp, Bengaluru</a></p>
+                            <p>Completed higher secondary education curriculum with a major focus on structural sciences, advanced mathematics, physics foundations, and logical reasoning paradigms.</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-content">
+                            <span class="timeline-date">Primary Schooling</span>
+                            <h3>Classes 3 - 5</h3>
+                            <p class="timeline-institution"><a href="https://www.no1airforceschoolgwalior.com/" target="_blank" class="text-link">No. 1 Air Force School, Gwalior</a></p>
+                            <p>Began foundational training modules, mathematical frameworks, and standard primary logical milestone evaluations.</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-content">
+                            <span class="timeline-date">Early Foundation</span>
+                            <h3>LKG - Class 2</h3>
+                            <p class="timeline-institution"><a href="https://afaste.karnataka.gov.in/" target="_blank" class="text-link">Air Force School ASTE, GV Camp, Bengaluru</a></p>
+                            <p>Initial early educational milestones and scholastic orientation structures.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="skills" class="page-section">
+            <div class="section-container">
+                <h2>Technical Expertise</h2>
+                <p class="section-desc">A structured layout of my development languages, technical frameworks, and hardware engineering tools mapped directly from my academic training.</p>
+                <div class="download-container" style="margin-bottom: 2rem; background: var(--card-bg); border: 1px solid var(--card-border); padding: 1.5rem; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; backdrop-filter: blur(4px);">
+                    <div>
+                        <h4 style="margin-bottom: 0.25rem; font-size: 1.1rem;">Curriculum Vitae / Resume</h4>
+                        <p style="color: var(--text-muted); font-size: 0.9rem; margin: 0;">Download a compiled, print-ready PDF copy of my technical profile and project layout.</p>
+                    </div>
+                    <a href="chaitanya_jha_resume.pdf" download class="btn primary" style="padding: 0.6rem 1.5rem; font-size: 0.9rem;">Download CV</a>
+                </div>
+                <div class="skills-categories">
+                    <div class="skill-category">
+                        <h3>Core Programming Languages</h3>
+                        <div id="languages-container" class="skills-grid"></div>
+                    </div>
+                    <div class="skill-category">
+                        <h3>Web Development & Databases</h3>
+                        <div id="web-container" class="skills-grid"></div>
+                    </div>
+                    <div class="skill-category">
+                        <h3>Hardware Description & Engineering Design</h3>
+                        <div id="hardware-container" class="skills-grid"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="testing" class="page-section">
+            <div class="section-container">
+                <h2>QA & Beta Testing Experience</h2>
+                <p class="section-desc">Extensive background executing system diagnostics, reporting performance anomalies, and optimizing system-level implementations during critical release branches.</p>
+                <div class="testing-grid">
+                    <a href="https://web.archive.org/web/20201209172236/https://www.amd.com/en/support" target="_blank" class="testing-card">
+                        <div class="brand-logo"><img src="https://www.amd.com/themes/custom/amd/node_modules/amd-packages/branding/src/logo/amd-logo.svg" alt="AMD Logo" style="filter: invert(1);"></div>
+                        <div class="testing-details">
+                            <h3>AMD</h3><span class="test-tag">Graphics Driver Testing</span>
+                            <p>Conducted regression testing, resource allocation monitoring, and stability validation on driver packages to track display pipeline bottlenecks.</p>
+                        </div>
+                    </a>
+                    <a href="https://web.archive.org/web/20201124115124/https://www.intel.com/content/www/us/en/support/products/80939/graphics.html" target="_blank" class="testing-card">
+                        <div class="brand-logo"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/intel/intel-original.svg" alt="Intel Logo"></div>
+                        <div class="testing-details">
+                            <h3>Intel</h3><span class="test-tag">Graphics Driver Testing</span>
+                            <p>Analyzed software-hardware boundaries through driver stability test loops, validating shading architectures and execution trace logs.</p>
+                        </div>
+                    </a>
+                    <a href="https://web.archive.org/web/20201208093902/https://www.microsoft.com/" target="_blank" class="testing-card">
+                        <div class="brand-logo"><img src="https://upload.wikimedia.org/wikipedia/commons/9/96/Microsoft_logo_%282012%29.svg" alt="Microsoft Logo"></div>
+                        <div class="testing-details">
+                            <h3>Microsoft</h3><span class="test-tag">App Tester</span>
+                            <p>Isolated functional bugs, evaluated build telemetry states, and supplied concrete UI execution feedback on upcoming platform utility tools.</p>
+                        </div>
+                    </a>
+                    <a href="https://web.archive.org/web/20200619045610/https://beta.playvalorant.com/en-us/" target="_blank" class="testing-card">
+                        <div class="brand-logo"><img src="https://upload.wikimedia.org/wikipedia/commons/1/12/Riot_Games_2022_Fist.svg" alt="Riot Games Logo"></div>
+                        <div class="testing-details">
+                            <h3>Riot Games</h3><span class="test-tag">Valorant Closed Beta</span>
+                            <p>Analyzed networking latency vectors, tick-rate stability, engine frame drops, and structural map collision clipping issues during the initial 2020 closed beta deployment.</p>
+                        </div>
+                    </a>
+                    <a href="https://web.archive.org/web/20201208133504/https://www.xbox.com/" target="_blank" class="testing-card">
+                        <div class="brand-logo"><img src="https://upload.wikimedia.org/wikipedia/commons/f/f9/Xbox_one_logo.svg" alt="Xbox Logo" style="filter: invert(1);"></div>
+                        <div class="testing-details">
+                            <h3>Xbox</h3><span class="test-tag">Beta Ecosystem Validation</span>
+                            <p>Performed functional interface sanity runs and system compatibility tests across preview dashboard configurations and gaming subsystems.</p>
+                        </div>
+                    </a>
+                    <a href="https://web.archive.org/web/20201205213437/https://developer.android.com/" target="_blank" class="testing-card">
+                        <div class="brand-logo"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/google/google-original.svg" alt="Google Dev Logo"></div>
+                        <div class="testing-details">
+                            <h3>Google Dev Ecosystem</h3><span class="test-tag">App Ecosystem Testing</span>
+                            <p>Evaluated and stress-tested over 100+ separate alpha/beta ecosystem applications, assessing error handling, memory consumption, and Android build target stability metrics.</p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <section id="projects" class="page-section">
+            <div class="section-container">
+                <h2>Featured Projects</h2>
+                <div class="projects-grid">
+
+                    <div class="flip-card">
+                        <div class="flip-card-inner">
+                            <div class="flip-card-front">
+                                <div class="project-badge">AI &amp; Document Verification</div>
+                                <h3>Aegis One</h3>
+                                <p class="flip-hint">Hover to learn more</p>
+                            </div>
+                            <div class="flip-card-back">
+                                <div class="project-badge">AI &amp; Document Verification</div>
+                                <h3>Aegis One</h3>
+                                <p>A multi-phase software project engineered to analyze academic materials and identity documentation to programmatically verify authenticity and flag deepfakes.</p>
+                                <a href="aegis_one_report.txt" download class="btn secondary card-action-btn">Download Report</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flip-card">
+                        <div class="flip-card-inner">
+                            <div class="flip-card-front">
+                                <div class="project-badge">Full Stack / Automation</div>
+                                <h3>CodeCoach AI</h3>
+                                <p class="flip-hint">Hover to learn more</p>
+                            </div>
+                            <div class="flip-card-back">
+                                <div class="project-badge">Full Stack / Automation</div>
+                                <h3>CodeCoach AI</h3>
+                                <p>A dynamic web platform with persistent tracking states designed to analyze code architecture, monitor progress, and systematically point out recurring errors.</p>
+                                <a href="codecoach_ai_report.txt" download class="btn secondary card-action-btn">Download Report</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flip-card">
+                        <div class="flip-card-inner">
+                            <div class="flip-card-front">
+                                <div class="project-badge">IoT / Smart Infrastructure</div>
+                                <h3>Smart Sewer Management</h3>
+                                <p class="flip-hint">Hover to learn more</p>
+                            </div>
+                            <div class="flip-card-back">
+                                <div class="project-badge">IoT / Smart Infrastructure</div>
+                                <h3>Smart Sewer Management</h3>
+                                <p>A sensor-integrated automated system prototype designed to optimize urban infrastructure diagnostics and dynamically mitigate localized flash floods in Bangalore.</p>
+                                <a href="smart_sewer_report.txt" download class="btn secondary card-action-btn">Download Report</a>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <section id="contact" class="page-section">
+            <div class="section-container">
+                <h2>Contact Me</h2>
+                <p class="section-desc">Have an opportunity, a technical challenge, or a project to discuss? Drop a message below.</p>
+                <div class="contact-grid">
+                    <form id="contact-form" name="portfolio-contact" method="POST" action="https://formspree.io/f/xqejlezb" class="contact-form">
+                        <div class="form-group"><label for="name">Name</label><input type="text" id="name" name="name" required placeholder="Your Name"></div>
+                        <div class="form-group"><label for="email">Email</label><input type="email" id="email" name="email" required placeholder="Your Email"></div>
+                        <div class="form-group"><label for="message">Message</label><textarea id="message" name="message" rows="5" required placeholder="Your Message..."></textarea></div>
+                        <button type="submit" id="contact-submit" class="btn primary">Send Message</button>
+                        <div id="form-success" class="form-success-msg" style="display:none;">
+                            ✓ Message sent! I'll get back to you soon.
+                        </div>
+                        <div id="form-error" class="form-error-msg" style="display:none;">
+                            Something went wrong. Try emailing me directly.
+                        </div>
+                    </form>
+                    <div class="contact-info-card">
+                        <h3>Direct Channels</h3>
+                        <div class="info-item"><b>Email</b><a href="mailto:cjha234156@gmail.com">cjha234156@gmail.com</a></div>
+                        <div class="info-item"><b>Location</b><span>Bengaluru, Karnataka, India</span></div>
+                        <div class="info-item"><b>LinkedIn</b><a href="https://www.linkedin.com/in/chaitanya-jha-6b7739398?utm_source=share_via&utm_content=profile&utm_medium=member_android" target="_blank">View Profile</a></div>
+                        <div class="info-item"><b>Discord</b><span class="discord-tag">alcatraz_2341</span></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <div id="easter-egg-overlay" class="hidden-egg">
+        <canvas id="matrix-canvas"></canvas>
+        <div class="egg-terminal-text">
+            <h1 class="breach-title">Data Breaching in Progress...</h1>
+            <h2 class="compromised-subtitle">THE SYSTEM IS COMPROMISED</h2>
+        </div>
+    </div>
+
+    <audio id="doom-theme" src="" preload="auto" loop></audio>
+
+
+        <script src="script.js"></script>
+</body>
+</html>

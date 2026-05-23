@@ -1,0 +1,17 @@
+TECHNICAL COMPLETION REPORT: PROJECT AEGIS ONE
+--------------------------------------------------------------------------------
+Document Type: Deepfake & Document Integrity Verification System Architecture
+Lead Engineer: Chaitanya Jha
+Academic Institution: Bangalore Institute of Technology (BIT)
+
+1. INTRODUCTION & OVERVIEW
+Aegis One is an advanced software platform engineered to secure identity verification and academic credentialing infrastructures. Aegis One acts as an automated, multi-phase verification firewall designed to parse digital media layers, cross-examine structural components, and programmatically flag deepfakes, forged layers, and metadata discrepancies.
+
+2. SYSTEM FUNCTIONALITY & CORE MECHANISMS
+The system operates as an end-to-end media analysis pipeline. Upon receiving a digital document submission, Aegis One runs a multi-layered diagnostic check:
+- Error Level Analysis (ELA): Calculates pixel-by-pixel difference between the original and a resaved uniform compression image to isolate variations in error levels.
+- Metadata and Exif Parsing: Extracts underlying structural telemetry to identify editing software tags.
+- Geometric and Template Alignment: Matches incoming document geometries against verified templates, flagging layout box adjustments.
+
+3. STRATEGIC VALUE
+By replacing human inspection loops with automated error-level validation, Aegis One introduces programmatic accuracy into document verification. It significantly reduces institutional exposure to academic fraud and identity theft.
