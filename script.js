@@ -932,3 +932,48 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
+
+/* ============================================================
+   iOS SAFARI AUDIO UNLOCK
+   Safari blocks all audio until the user taps the page.
+   This silently unlocks the audio context on first interaction
+   so all easter egg sounds fire correctly afterward.
+   ============================================================ */
+(function() {
+    let unlocked = false;
+
+    function unlockAudio() {
+        if (unlocked) return;
+        unlocked = true;
+
+        // Create and immediately pause a silent buffer — this satisfies
+        // Safari's "user gesture required" requirement for all future plays
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const buf = ctx.createBuffer(1, 1, 22050);
+        const src = ctx.createBufferSource();
+        src.buffer = buf;
+        src.connect(ctx.destination);
+        src.start(0);
+        setTimeout(() => ctx.close(), 500);
+
+        // Also silently touch each audio element so Safari registers them
+        const silentUnlock = (audio) => {
+            if (!audio) return;
+            audio.muted = true;
+            audio.play().then(() => {
+                audio.pause();
+                audio.currentTime = 0;
+                audio.muted = false;
+            }).catch(() => { audio.muted = false; });
+        };
+
+        // Pre-unlock the doom audio element that already exists in DOM
+        silentUnlock(document.getElementById('doom-theme'));
+
+        document.removeEventListener('touchstart', unlockAudio);
+        document.removeEventListener('click', unlockAudio);
+    }
+
+    document.addEventListener('touchstart', unlockAudio, { passive: true });
+    document.addEventListener('click',      unlockAudio, { passive: true });
+})();
