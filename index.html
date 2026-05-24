@@ -11,8 +11,11 @@
     <canvas id="bg-canvas"></canvas>
 
     <nav class="navbar">
-        <div class="logo">Portfolio.</div>
-        <div class="nav-links">
+        <a class="logo" href="#home" onclick="switchPage('home')" style="text-decoration:none;color:inherit;cursor:pointer;">Portfolio</a>
+        <button class="nav-hamburger" id="nav-hamburger" aria-label="Toggle menu" style="display:none;">
+            <span></span><span></span><span></span>
+        </button>
+        <div class="nav-links" id="nav-links">
             <a href="#home" class="nav-item active" onclick="switchPage('home')">Home</a>
             <a href="#about" class="nav-item" onclick="switchPage('about')">About</a>
             <a href="#education" class="nav-item" onclick="switchPage('education')">Education</a>
@@ -78,7 +81,7 @@
                         <div class="timeline-content">
                             <span class="timeline-date">Secondary Education</span>
                             <h3>Classes 5 - 12</h3>
-                            <p class="timeline-institution"><a href="https://afaste.karnataka.gov.in/" target="_blank" class="text-link">Air Force School ASTE, GV Camp, Bengaluru</a></p>
+                            <p class="timeline-institution"><a href="https://afsaste.edu.in/" target="_blank" class="text-link">Air Force School ASTE, GV Camp, Bengaluru</a></p>
                             <p>Completed higher secondary education curriculum with a major focus on structural sciences, advanced mathematics, physics foundations, and logical reasoning paradigms.</p>
                         </div>
                     </div>
@@ -87,7 +90,7 @@
                         <div class="timeline-content">
                             <span class="timeline-date">Primary Schooling</span>
                             <h3>Classes 3 - 5</h3>
-                            <p class="timeline-institution"><a href="https://www.no1airforceschoolgwalior.com/" target="_blank" class="text-link">No. 1 Air Force School, Gwalior</a></p>
+                            <p class="timeline-institution"><a href="https://www.no1airforceschoolgwl.com/" target="_blank" class="text-link">No. 1 Air Force School, Gwalior</a></p>
                             <p>Began foundational training modules, mathematical frameworks, and standard primary logical milestone evaluations.</p>
                         </div>
                     </div>
@@ -96,7 +99,7 @@
                         <div class="timeline-content">
                             <span class="timeline-date">Early Foundation</span>
                             <h3>LKG - Class 2</h3>
-                            <p class="timeline-institution"><a href="https://afaste.karnataka.gov.in/" target="_blank" class="text-link">Air Force School ASTE, GV Camp, Bengaluru</a></p>
+                            <p class="timeline-institution"><a href="https://afsaste.edu.in/" target="_blank" class="text-link">Air Force School ASTE, GV Camp, Bengaluru</a></p>
                             <p>Initial early educational milestones and scholastic orientation structures.</p>
                         </div>
                     </div>
@@ -199,7 +202,7 @@
                                 <div class="project-badge">AI &amp; Document Verification</div>
                                 <h3>Aegis One</h3>
                                 <p>A multi-phase software project engineered to analyze academic materials and identity documentation to programmatically verify authenticity and flag deepfakes.</p>
-                                <a href="aegis_one_report.txt" download class="btn secondary card-action-btn">Download Report</a>
+                                <button class="btn secondary card-action-btn" onclick="openProjectModal('aegis')">View Details</button>
                             </div>
                         </div>
                     </div>
@@ -215,7 +218,7 @@
                                 <div class="project-badge">Full Stack / Automation</div>
                                 <h3>CodeCoach AI</h3>
                                 <p>A dynamic web platform with persistent tracking states designed to analyze code architecture, monitor progress, and systematically point out recurring errors.</p>
-                                <a href="codecoach_ai_report.txt" download class="btn secondary card-action-btn">Download Report</a>
+                                <button class="btn secondary card-action-btn" onclick="openProjectModal('codecoach')">View Details</button>
                             </div>
                         </div>
                     </div>
@@ -231,7 +234,7 @@
                                 <div class="project-badge">IoT / Smart Infrastructure</div>
                                 <h3>Smart Sewer Management</h3>
                                 <p>A sensor-integrated automated system prototype designed to optimize urban infrastructure diagnostics and dynamically mitigate localized flash floods in Bangalore.</p>
-                                <a href="smart_sewer_report.txt" download class="btn secondary card-action-btn">Download Report</a>
+                                <button class="btn secondary card-action-btn" onclick="openProjectModal('sewer')">View Details</button>
                             </div>
                         </div>
                     </div>
@@ -239,6 +242,16 @@
                 </div>
             </div>
         </section>
+
+        <!-- ── Project Detail Modals ─────────────────────────────────── -->
+        <div id="project-modal-overlay" class="proj-modal-overlay" onclick="closeProjectModal(event)">
+            <div class="proj-modal" id="project-modal">
+                <button class="proj-modal-close" onclick="closeProjectModal(null)" aria-label="Close">&times;</button>
+                <div class="proj-modal-badge" id="modal-badge"></div>
+                <h2 class="proj-modal-title" id="modal-title"></h2>
+                <div class="proj-modal-body" id="modal-body"></div>
+            </div>
+        </div>
 
         <section id="contact" class="page-section">
             <div class="section-container">

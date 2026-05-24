@@ -18,6 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initHeroTyping();
     initNavGlowPill();
     initScrollProgress();
+    initMobileNav();
 });
 
 function switchPage(pageId) {
@@ -36,6 +37,46 @@ function switchPage(pageId) {
 
     const activeLink = document.querySelector(`.nav-item[href="#${pageId}"]`);
     if (activeLink) activeLink.classList.add('active');
+
+    // Close mobile drawer when a nav item is tapped
+    const navLinks   = document.getElementById('nav-links');
+    const hamburger  = document.getElementById('nav-hamburger');
+    if (navLinks && hamburger) {
+        navLinks.classList.remove('mobile-open');
+        hamburger.classList.remove('open');
+    }
+}
+
+function initMobileNav() {
+    const hamburger = document.getElementById('nav-hamburger');
+    const navLinks  = document.getElementById('nav-links');
+    if (!hamburger || !navLinks) return;
+
+    const mq = window.matchMedia('(max-width: 768px)');
+
+    function applyMobile(matches) {
+        hamburger.style.display = matches ? 'flex' : 'none';
+        if (!matches) {
+            navLinks.classList.remove('mobile-open');
+            hamburger.classList.remove('open');
+        }
+    }
+
+    applyMobile(mq.matches);
+    mq.addEventListener('change', e => applyMobile(e.matches));
+
+    hamburger.addEventListener('click', () => {
+        const open = navLinks.classList.toggle('mobile-open');
+        hamburger.classList.toggle('open', open);
+    });
+
+    // Close drawer on outside tap
+    document.addEventListener('click', e => {
+        if (!navLinks.contains(e.target) && !hamburger.contains(e.target)) {
+            navLinks.classList.remove('mobile-open');
+            hamburger.classList.remove('open');
+        }
+    });
 }
 
 function populateSkills() {
@@ -85,76 +126,238 @@ function populateSkills() {
 
 function initBackgroundAnimation() {
     const canvas = document.getElementById('bg-canvas');
-    const ctx = canvas.getContext('2d');
-    
-    let particlesArray = [];
-    const numberOfParticles = 45;
+    const ctx    = canvas.getContext('2d');
+
+    let W, H;
+
+    // ── Default accent colour (matches CSS --accent: #10b981) ──────────────
+    // window.__eggParticleRGB is set by the colour-theme easter egg as "r,g,b"
+    function accentRGB() {
+        return window.__eggParticleRGB || '16,185,129';
+    }
+
+    // ── Grid config ────────────────────────────────────────────────────────
+    const CELL   = 48;    // px between grid nodes
+    let   COLS, ROWS;
 
     function resizeCanvas() {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-    }
-    resizeCanvas();
-    window.addEventListener('resize', resizeCanvas);
-
-    class Particle {
-        constructor() {
-            this.x = Math.random() * canvas.width;
-            this.y = Math.random() * canvas.height;
-            this.size = Math.random() * 2 + 0.5;
-            this.speedX = Math.random() * 0.4 - 0.2;
-            this.speedY = Math.random() * 0.4 - 0.2;
-        }
-        update() {
-            this.x += this.speedX;
-            this.y += this.speedY;
-
-            if (this.x > canvas.width || this.x < 0) this.speedX = -this.speedX;
-            if (this.y > canvas.height || this.y < 0) this.speedY = -this.speedY;
-        }
-        draw() {
-            ctx.fillStyle = 'rgba(16, 185, 129, 0.15)';
-            ctx.beginPath();
-            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-            ctx.fill();
-        }
+        W = canvas.width  = window.innerWidth;
+        H = canvas.height = window.innerHeight;
+        COLS = Math.ceil(W / CELL) + 1;
+        ROWS = Math.ceil(H / CELL) + 1;
+        buildGrid();
     }
 
-    function init() {
-        particlesArray = [];
-        for (let i = 0; i < numberOfParticles; i++) {
-            particlesArray.push(new Particle());
-        }
-    }
+    // ── Node pool ──────────────────────────────────────────────────────────
+    // Each node can be a junction (rendered dot) or an empty cross-point.
+    let nodes = [];
 
-    function animate() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        
-        for (let i = 0; i < particlesArray.length; i++) {
-            particlesArray[i].update();
-            particlesArray[i].draw();
-            
-            for (let j = i; j < particlesArray.length; j++) {
-                const dx = particlesArray[i].x - particlesArray[j].x;
-                const dy = particlesArray[i].y - particlesArray[j].y;
-                const distance = Math.sqrt(dx * dx + dy * dy);
-                
-                if (distance < 150) {
-                    ctx.beginPath();
-                    ctx.strokeStyle = `rgba(16, 185, 129, ${0.05 * (1 - distance/150)})`;
-                    ctx.lineWidth = 0.8;
-                    ctx.moveTo(particlesArray[i].x, particlesArray[i].y);
-                    ctx.lineTo(particlesArray[j].x, particlesArray[j].y);
-                    ctx.stroke();
-                    ctx.closePath();
-                }
+    function buildGrid() {
+        nodes = [];
+        for (let r = 0; r < ROWS; r++) {
+            for (let c = 0; c < COLS; c++) {
+                nodes.push({
+                    x: c * CELL,
+                    y: r * CELL,
+                    // is this node a visible junction?
+                    junction: Math.random() < 0.18,
+                    // pulse phase offset for breathing glow
+                    phase: Math.random() * Math.PI * 2,
+                    // right-edge and bottom-edge trace existence
+                    traceRight:  Math.random() < 0.45,
+                    traceBottom: Math.random() < 0.45,
+                });
             }
         }
+    }
+
+    // ── Signal pulses travelling along traces ──────────────────────────────
+    // A pulse has an origin node index, a direction ('h'|'v'), and a 0-1 progress.
+    const PULSE_COUNT = 28;
+    let pulses = [];
+
+    function spawnPulse() {
+        // pick a random node that has at least one valid trace
+        const candidates = nodes.filter(n => n.traceRight || n.traceBottom);
+        if (!candidates.length) return;
+        const n = candidates[Math.floor(Math.random() * candidates.length)];
+        const dir = (n.traceRight && n.traceBottom)
+            ? (Math.random() < 0.5 ? 'h' : 'v')
+            : n.traceRight ? 'h' : 'v';
+        pulses.push({
+            nodeIdx: nodes.indexOf(n),
+            dir,
+            t: 0,
+            speed: 0.004 + Math.random() * 0.006,
+            // each pulse picks up the current accent colour when spawned
+            rgb: accentRGB(),
+        });
+    }
+
+    function initPulses() {
+        pulses = [];
+        for (let i = 0; i < PULSE_COUNT; i++) spawnPulse();
+    }
+
+    // ── Scanline (horizontal sweep) ────────────────────────────────────────
+    let scanY = 0;
+
+    // ── Main render ────────────────────────────────────────────────────────
+    let lastTime = 0;
+
+    function animate(ts) {
+        const dt = Math.min(ts - lastTime, 32); // cap at ~30fps delta
+        lastTime = ts;
+
+        ctx.clearRect(0, 0, W, H);
+
+        // --- 1. Dark base ---
+        ctx.fillStyle = '#0a0f1d';
+        ctx.fillRect(0, 0, W, H);
+
+        const rgb = accentRGB();
+        const time = ts * 0.001;
+
+        // --- 2. Faint grid dots (every intersection) ---
+        ctx.fillStyle = `rgba(${rgb},0.04)`;
+        for (let r = 0; r < ROWS; r++) {
+            for (let c = 0; c < COLS; c++) {
+                ctx.beginPath();
+                ctx.arc(c * CELL, r * CELL, 1, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        // --- 3. Horizontal trace lines ---
+        for (let r = 0; r < ROWS; r++) {
+            for (let c = 0; c < COLS - 1; c++) {
+                const n = nodes[r * COLS + c];
+                if (!n || !n.traceRight) continue;
+                ctx.beginPath();
+                ctx.moveTo(n.x, n.y);
+                ctx.lineTo(n.x + CELL, n.y);
+                ctx.strokeStyle = `rgba(${rgb},0.07)`;
+                ctx.lineWidth = 0.7;
+                ctx.stroke();
+            }
+        }
+
+        // --- 4. Vertical trace lines ---
+        for (let r = 0; r < ROWS - 1; r++) {
+            for (let c = 0; c < COLS; c++) {
+                const n = nodes[r * COLS + c];
+                if (!n || !n.traceBottom) continue;
+                ctx.beginPath();
+                ctx.moveTo(n.x, n.y);
+                ctx.lineTo(n.x, n.y + CELL);
+                ctx.strokeStyle = `rgba(${rgb},0.07)`;
+                ctx.lineWidth = 0.7;
+                ctx.stroke();
+            }
+        }
+
+        // --- 5. Junction nodes (pulsing rings + dots) ---
+        for (const n of nodes) {
+            if (!n.junction) continue;
+            const glow = 0.5 + 0.5 * Math.sin(time * 1.6 + n.phase);
+
+            // outer ring
+            ctx.beginPath();
+            ctx.arc(n.x, n.y, 3.5, 0, Math.PI * 2);
+            ctx.strokeStyle = `rgba(${rgb},${0.12 + 0.08 * glow})`;
+            ctx.lineWidth = 0.8;
+            ctx.stroke();
+
+            // inner dot
+            ctx.beginPath();
+            ctx.arc(n.x, n.y, 1.5, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(${rgb},${0.25 + 0.25 * glow})`;
+            ctx.fill();
+
+            // glow halo (shadow trick)
+            ctx.shadowColor  = `rgba(${rgb},${0.4 * glow})`;
+            ctx.shadowBlur   = 6;
+            ctx.beginPath();
+            ctx.arc(n.x, n.y, 1.5, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(${rgb},${0.5 * glow})`;
+            ctx.fill();
+            ctx.shadowBlur = 0;
+        }
+
+        // --- 6. Signal pulses ---
+        for (let i = pulses.length - 1; i >= 0; i--) {
+            const p = pulses[i];
+            p.t += p.speed;
+
+            if (p.t >= 1) {
+                // re-spawn with fresh colour
+                pulses.splice(i, 1);
+                spawnPulse();
+                continue;
+            }
+
+            const n = nodes[p.nodeIdx];
+            if (!n) continue;
+
+            let x1, y1, x2, y2;
+            if (p.dir === 'h') {
+                x1 = n.x; y1 = n.y;
+                x2 = n.x + CELL; y2 = n.y;
+            } else {
+                x1 = n.x; y1 = n.y;
+                x2 = n.x; y2 = n.y + CELL;
+            }
+
+            // head position
+            const hx = x1 + (x2 - x1) * p.t;
+            const hy = y1 + (y2 - y1) * p.t;
+
+            // trail gradient
+            const trail = ctx.createLinearGradient(x1, y1, hx, hy);
+            trail.addColorStop(0,   `rgba(${p.rgb},0)`);
+            trail.addColorStop(0.6, `rgba(${p.rgb},0.08)`);
+            trail.addColorStop(1,   `rgba(${p.rgb},0.55)`);
+
+            ctx.beginPath();
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(hx, hy);
+            ctx.strokeStyle = trail;
+            ctx.lineWidth = 1.4;
+            ctx.stroke();
+
+            // bright head dot
+            ctx.shadowColor = `rgba(${p.rgb},0.9)`;
+            ctx.shadowBlur  = 8;
+            ctx.beginPath();
+            ctx.arc(hx, hy, 2, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(${p.rgb},1)`;
+            ctx.fill();
+            ctx.shadowBlur = 0;
+        }
+
+        // --- 7. Subtle moving scanline ---
+        scanY = (scanY + 0.25) % H;
+        const scanGrad = ctx.createLinearGradient(0, scanY - 60, 0, scanY + 60);
+        scanGrad.addColorStop(0,   `rgba(${rgb},0)`);
+        scanGrad.addColorStop(0.5, `rgba(${rgb},0.025)`);
+        scanGrad.addColorStop(1,   `rgba(${rgb},0)`);
+        ctx.fillStyle = scanGrad;
+        ctx.fillRect(0, scanY - 60, W, 120);
+
+        // --- 8. Vignette ---
+        const vig = ctx.createRadialGradient(W/2, H/2, H * 0.15, W/2, H/2, H * 0.9);
+        vig.addColorStop(0, 'rgba(0,0,0,0)');
+        vig.addColorStop(1, 'rgba(0,0,0,0.6)');
+        ctx.fillStyle = vig;
+        ctx.fillRect(0, 0, W, H);
+
         requestAnimationFrame(animate);
     }
 
-    init();
-    animate();
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+    initPulses();
+    requestAnimationFrame(animate);
 }
 
 window.addEventListener('keydown', (e) => {
@@ -295,6 +498,16 @@ function triggerDoomEgg() {
             triggerSnakeEgg();
             resetBuffer();
             return;
+        }
+
+        // 5. Breaking Bad
+        const bbTriggers = ['cook', 'walter', 'walter white', 'heisenberg', 'jessie'];
+        for (const word of bbTriggers) {
+            if (buf.endsWith(word)) {
+                triggerBreakingBadEgg();
+                resetBuffer();
+                return;
+            }
         }
     }
 
@@ -618,14 +831,29 @@ function triggerDoomEgg() {
         });
     }
 
+    // Lazy-init audio: only create objects when the egg is actually triggered.
+    // Creating Audio() at parse time caused browsers to preload/autoplay randomly.
     let snakeGaspAudio  = null;
     let snakeDuranAudio = null;
+
+    function ensureSnakeAudio() {
+        if (!snakeGaspAudio) {
+            snakeGaspAudio = new Audio('./Gasp.mp3');
+        }
+        if (!snakeDuranAudio) {
+            snakeDuranAudio = new Audio('./duran.mp3');
+            snakeDuranAudio.loop = true;
+        }
+    }
+
     let snakePhaseTimer = null;
     let snakeCodecTimer = null;
     let snakeGifLoopTimer = null;
-    let snakeGifDuration = 0; // will be measured on first play
+    let snakeGifDuration = 0;
 
     function startSnakePhase1() {
+        ensureSnakeAudio();
+
         const overlay = document.getElementById('snake-overlay');
         const gif     = document.getElementById('snake-gif');
         const bar     = document.getElementById('snake-codec-bar');
@@ -643,9 +871,6 @@ function triggerDoomEgg() {
         typeCodecText(text, '!  !  !', 80);
 
         // Gasp audio
-        if (!snakeGaspAudio) {
-            snakeGaspAudio = new Audio('./Gasp.mp3');
-        }
         snakeGaspAudio.currentTime = 0;
         snakeGaspAudio.play().catch(() => {});
 
@@ -695,10 +920,6 @@ function triggerDoomEgg() {
         typeCodecText(text, 'SHADOW MOSES — B2 BASEMENT', 55);
 
         // Duran Duran music
-        if (!snakeDuranAudio) {
-            snakeDuranAudio = new Audio('./duran.mp3');
-            snakeDuranAudio.loop = true;
-        }
         snakeDuranAudio.currentTime = 0;
         snakeDuranAudio.play().catch(() => {});
 
@@ -970,6 +1191,18 @@ document.addEventListener('DOMContentLoaded', () => {
         // Pre-unlock the doom audio element that already exists in DOM
         silentUnlock(document.getElementById('doom-theme'));
 
+        // Pre-unlock all easter egg audio objects
+        [
+            './Gasp.mp3',
+            './duran.mp3',
+            './gow_ashes.mp3',
+            './cote_white_room.mp3',
+            './doom_e1m1.mp3',
+        ].forEach(src => {
+            const a = new Audio(src);
+            silentUnlock(a);
+        });
+
         document.removeEventListener('touchstart', unlockAudio);
         document.removeEventListener('click', unlockAudio);
     }
@@ -977,3 +1210,147 @@ document.addEventListener('DOMContentLoaded', () => {
     document.addEventListener('touchstart', unlockAudio, { passive: true });
     document.addEventListener('click',      unlockAudio, { passive: true });
 })();
+
+    /* ─────────────────────────────────────────────────────────
+       EGG 5 — BREAKING BAD
+       Triggers on: cook / walter / walter white / heisenberg / jessie
+       Plays cook.mp4 fullscreen with exit button
+    ───────────────────────────────────────────────────────── */
+    function triggerBreakingBadEgg() {
+        let overlay = document.getElementById('bb-overlay');
+        if (!overlay) buildBBOverlay();
+        overlay = document.getElementById('bb-overlay');
+        overlay.classList.add('active');
+
+        const video = document.getElementById('bb-video');
+        video.currentTime = 0;
+        video.play().catch(() => {});
+    }
+
+    function buildBBOverlay() {
+        const el = document.createElement('div');
+        el.id = 'bb-overlay';
+        el.innerHTML = `
+            <video id="bb-video" src="./cook.mp4" playsinline></video>
+            <button id="bb-exit-btn" onclick="closeBBEgg()">✕ Exit</button>
+            <div id="bb-caption">Say my name.</div>
+        `;
+        document.body.appendChild(el);
+
+        // Auto-close when video ends
+        const video = el.querySelector('#bb-video');
+        video.addEventListener('ended', closeBBEgg);
+    }
+
+    function closeBBEgg() {
+        const overlay = document.getElementById('bb-overlay');
+        if (!overlay) return;
+        const video = document.getElementById('bb-video');
+        if (video) { video.pause(); video.currentTime = 0; }
+        overlay.classList.remove('active');
+    }
+
+
+/* ============================================================
+   PROJECT CARDS — tap to expand on touch devices
+   ============================================================ */
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.flip-card').forEach(card => {
+        card.addEventListener('click', (e) => {
+            // Don't toggle if they tapped the download button
+            if (e.target.closest('.card-action-btn')) return;
+            card.classList.toggle('expanded');
+        });
+    });
+});
+
+/* ============================================================
+   PROJECT DETAIL MODALS
+   ============================================================ */
+
+const PROJECT_DATA = {
+    aegis: {
+        badge: 'AI & Document Verification',
+        title: 'Aegis One',
+        overview: 'A multi-phase Python pipeline engineered to analyse academic credentials and identity documents, programmatically detecting deepfakes and flagged authenticity anomalies through layout inspection and metadata analysis.',
+        highlights: [
+            'Designed a document ingestion module that parses structural layout, font consistency, and metadata signatures across academic and identity document types.',
+            'Implemented classification logic to distinguish genuine documents from AI-generated or digitally manipulated counterparts.',
+            'Generated structured anomaly reports flagging specific regions of suspicion with confidence scores.',
+            'Architected the system in self-contained phases — ingestion, analysis, classification, and reporting — for modularity and easy extension.',
+        ],
+        stack: ['Python', 'Computer Vision', 'Document Analysis', 'Metadata Parsing', 'Classification Logic'],
+        status: 'Prototype — Personal Project',
+    },
+    codecoach: {
+        badge: 'Full Stack / Automation',
+        title: 'CodeCoach AI',
+        overview: 'A full-stack web platform with persistent session tracking built to help developers identify recurring logic errors, monitor architecture trends in their code, and systematically improve through targeted feedback.',
+        highlights: [
+            'Built a full-stack interface allowing users to submit code for analysis across multiple sessions with state persistence between visits.',
+            'Integrated a backend analysis module that scores submissions, tracks improvement trajectories over time, and surfaces repeating error patterns.',
+            'Designed a feedback engine that categorises errors by type — logic, syntax, architecture — and generates targeted improvement suggestions.',
+            'Implemented session history and progress dashboards so users can review their improvement curve across sessions.',
+        ],
+        stack: ['JavaScript', 'HTML', 'CSS', 'Python', 'MySQL', 'REST API'],
+        status: 'Prototype — Personal Project',
+    },
+    sewer: {
+        badge: 'IoT / Smart Infrastructure',
+        title: 'Smart Sewer Management',
+        overview: 'A sensor-integrated automated network prototype designed to map urban drainage load in real time across Bengaluru, dynamically identifying flash-flood risk zones and relaying pre-emptive maintenance alerts.',
+        highlights: [
+            'Architected a distributed sensor network layout to monitor sewer blockage levels, flow rates, and overflow indicators across multiple urban nodes.',
+            'Designed a telemetry pipeline that aggregates sensor readings into a centralised dashboard, flagging high-risk zones before flood onset.',
+            'Implemented dynamic threshold logic that adjusts alert sensitivity based on rainfall forecast data and historical blockage patterns.',
+            'Structured the system to enable pre-emptive maintenance dispatch, reducing reactive emergency response time for municipal infrastructure teams.',
+        ],
+        stack: ['IoT Sensors', 'Python', 'Telemetry Pipeline', 'Data Aggregation', 'Dashboard UI'],
+        status: 'Prototype — Academic / Personal Project',
+    },
+};
+
+function openProjectModal(key) {
+    const data = PROJECT_DATA[key];
+    if (!data) return;
+
+    document.getElementById('modal-badge').textContent   = data.badge;
+    document.getElementById('modal-title').textContent   = data.title;
+
+    const body = document.getElementById('modal-body');
+    body.innerHTML = `
+        <h4>Overview</h4>
+        <p>${data.overview}</p>
+
+        <h4>Key Engineering Points</h4>
+        <ul>
+            ${data.highlights.map(h => `<li>${h}</li>`).join('')}
+        </ul>
+
+        <h4>Tech Stack</h4>
+        <div class="tag-row">
+            ${data.stack.map(t => `<span class="tech-tag">${t}</span>`).join('')}
+        </div>
+
+        <h4>Status</h4>
+        <div class="tag-row">
+            <span class="status-tag">${data.status}</span>
+        </div>
+    `;
+
+    const overlay = document.getElementById('project-modal-overlay');
+    overlay.classList.add('open');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeProjectModal(e) {
+    // If called from overlay click, only close if the overlay itself was clicked
+    if (e && e.target !== document.getElementById('project-modal-overlay')) return;
+    document.getElementById('project-modal-overlay').classList.remove('open');
+    document.body.style.overflow = '';
+}
+
+// Close on Escape
+document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeProjectModal(null);
+});
